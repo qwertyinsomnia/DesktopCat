@@ -1,5 +1,9 @@
+import time
+
 from tkinter import * 
 from PIL import Image, ImageTk
+
+
 
 class MyLabel(Label):
     def __init__(self, master, filename):
@@ -39,6 +43,39 @@ class MyLabel(Label):
             self.idx = 0
         self.cancel = self.after(self.delay, self.play)  
 
+    def deleteImage(self):
+        self.frames.clear()
+        self.delay = 0
+        self.idx = 0
+
+    def updateImage(self, filename):
+        im = Image.open(filename)
+        seq =  []
+        try:
+            while 1:
+                seq.append(im.copy())
+                im.seek(len(seq)) # skip to next frame
+        except EOFError:
+            pass # we're done
+
+        try:
+            self.delay = im.info['duration']
+        except KeyError:
+            self.delay = 10
+
+        first = seq[0].convert('RGBA')
+        self.frames = [ImageTk.PhotoImage(first)]
+
+        temp = seq[0]
+        for image in seq[1:]:
+            temp.paste(image)
+            frame = temp.convert('RGBA')
+            self.frames.append(ImageTk.PhotoImage(frame))
+
+        self.idx = 0
+        self.cancel = self.after(self.delay, self.play)
+
+
 class WindowDraggable():
 	def __init__(self, label):
 		self.label = label
@@ -59,9 +96,25 @@ class WindowDraggable():
 		y = (event.y_root - self.y) 
 		root.geometry("+%s+%s" % (x, y))		
 
+def update(index):
+    print("update timer")
+    anim.updateImage('src/CatSpriteWapTail.gif')
+    # root.after(500, update, index)
+
+
 root = Tk()
-anim = MyLabel(root, 'CatSprite.gif')
+
+anim = MyLabel(root, 'src/CatSpriteIdle.gif')
 WindowDraggable(anim)
+anim.pack()
+
+# time.sleep(3)
+# anim.updateImage('src/CatSpriteWapTail.gif')
+# anim = MyLabel(root, 'src/CatSpriteWapTail.gif')
+# WindowDraggable(anim)
+# anim.pack()
+
+# position and property
 root.overrideredirect(True)
 screen_width = root.winfo_screenwidth() - 100 - 160
 screen_height = root.winfo_screenheight() - 100 - 160
@@ -71,5 +124,6 @@ root.wm_attributes("-transparentcolor", "red", '-topmost', True)
 root.lift()
 
 root.bind('<Escape>', lambda e: root.destroy())
-anim.pack()
+
+root.after(3000, update, 0)
 root.mainloop()
