@@ -34,40 +34,27 @@ class CatControl:
         self.sleepFlag = 0
         self.walkFlag = 0
         self.walkDir = Walk_Leftward
+        
+        self.jumpFlag = 0
 
 def UpdateTest(catControl):
-    # screen_pos_x = root.winfo_x() - 10 * event
-    # screen_pos_y = root.winfo_y()
-    # screen_position = '+' + str(screen_pos_x) + '+' + str(screen_pos_y)
-    # root.geometry(screen_position)
-    # event = 1
-    # root.after(1000, UpdateTest, event)
+    seed = random.randrange(7)
+    seed = 3
+    if seed == 3: # idle to sleep or sleep to idle
+        # showIdle(0)
+        # root.after(frameCntIdle * frameIntervalIdle, showJumpHigh, 0)
+        # root.after(frameCntJumpHigh * frameIntervalJumpHigh + frameCntIdle * frameIntervalIdle, UpdateTest, catControl)
+        
+        # showJumpLow(0)
+        # root.after(frameCntJumpLow * frameIntervalJumpLow, UpdateTest, 0)
+        showIdle(0)
+        root.after(frameCntIdle * frameIntervalIdle, showJumpLow, 0)
+        screen_pos_x = root.winfo_x()
+        screen_pos_y = root.winfo_y() + 20 * 4
+        screen_position = '+' + str(screen_pos_x) + '+' + str(screen_pos_y)
+        root.geometry(screen_position)
+        root.after(frameCntJumpLow * frameIntervalJumpLow + frameCntIdle * frameIntervalIdle, UpdateTest, catControl)
 
-    print(root.winfo_x(), catControl.walkFlag, catControl.event)
-    if catControl.event == 0 and catControl.walkFlag == 0:
-        showIdleToWalk(0, catControl.walkDir)
-        catControl.event = 5
-        catControl.walkFlag = 1
-        root.after(frameCntIdleToWalk * frameIntervalIdleToWalk, UpdateTest, catControl)
-    elif catControl.event == 5 and catControl.walkFlag != 0:
-        if (root.winfo_x() < 1200 or root.winfo_x() > 1600) and catControl.walkFlag == 2:
-            catControl.walkFlag = 0
-            root.after(0, UpdateTest, catControl)
-            
-        else:
-            print("walk")
-            showWalk(0, catControl.walkDir)
-            if catControl.walkFlag == 1:
-                catControl.walkFlag = 2
-            root.after(frameCntWalk * frameIntervalWalk, UpdateTest, catControl)
-    elif catControl.event == 5 and catControl.walkFlag == 0:
-        showWalkToIdle(0, catControl.walkDir)
-        catControl.event = 0
-        if catControl.walkDir == Walk_Leftward:
-            catControl.walkDir = Walk_Rightward
-        else:
-            catControl.walkDir = Walk_Leftward
-        root.after(frameCntWalkToIdle * frameIntervalWalkToIdle, UpdateTest, catControl)
 
 def Update(catControl):
     # print("Update movement")
@@ -112,10 +99,29 @@ def Update(catControl):
         showWagTail(0)
         root.after(frameCntWagTail * frameIntervalWagTail, Update, catControl)
     elif seed == 2:
-        catControl.walkDir = random.choice([Walk_Leftward, Walk_Rightward])
+        if root.winfo_x() < 100:
+            catControl.walkDir == Walk_Rightward
+        elif root.winfo_x() > 1500:
+            catControl.walkDir == Walk_Leftward
+        else:
+            catControl.walkDir = random.choice([Walk_Leftward, Walk_Rightward])
         showIdleToWalk(0, catControl.walkDir)
         catControl.walkFlag = 1
         root.after(frameCntIdleToWalk * frameIntervalIdleToWalk, Update, catControl)
+    elif seed == 3:
+        if random.randrange(2) == 0 and root.winfo_y() > 120:
+            showJumpHigh(0)
+            root.after(frameCntJumpHigh * frameIntervalJumpHigh, Update, catControl)
+        elif random.randrange(2) == 1 and root.winfo_y() < 800:
+            showJumpLow(0)
+            screen_pos_x = root.winfo_x()
+            screen_pos_y = root.winfo_y() + 20 * 4
+            screen_position = '+' + str(screen_pos_x) + '+' + str(screen_pos_y)
+            root.geometry(screen_position)
+            root.after(frameCntJumpLow * frameIntervalJumpLow, Update, catControl)
+        else:
+            showIdle(0)
+            root.after(frameCntIdle * frameIntervalIdle, Update, catControl)
     else:
         showIdle(0)
         root.after(frameCntIdle * frameIntervalIdle, Update, catControl)
@@ -200,6 +206,36 @@ def showIdleToWalk(idx, dir):
         return
     root.after(frameIntervalIdleToWalk, showIdleToWalk, idx, dir)
 
+def showJumpHigh(idx):
+    if idx == 0:
+        screen_pos_x = root.winfo_x()
+        screen_pos_y = root.winfo_y() - JumpHeight
+        screen_position = '+' + str(screen_pos_x) + '+' + str(screen_pos_y)
+        root.geometry(screen_position)
+    frame = framesJumpHigh[idx]
+    label.configure(image=frame)
+    idx += 1
+    if idx == frameCntJumpHigh:
+        return
+    root.after(frameIntervalJumpHigh, showJumpHigh, idx)
+
+def showJumpLow(idx):
+    if idx == 0:
+        screen_pos_x = root.winfo_x()
+        screen_pos_y = root.winfo_y() - 5 * 4
+        screen_position = '+' + str(screen_pos_x) + '+' + str(screen_pos_y)
+        root.geometry(screen_position)
+    frame = framesJumpLow[idx]
+    label.configure(image=frame)
+    idx += 1
+    if idx == frameCntJumpLow:
+        # screen_pos_x = root.winfo_x()
+        # screen_pos_y = root.winfo_y() + 40 * 4
+        # screen_position = '+' + str(screen_pos_x) + '+' + str(screen_pos_y)
+        # root.geometry(screen_position)
+        return
+    root.after(frameIntervalJumpLow, showJumpLow, idx)
+
 def rightKey(event):
     menubar.add_command(label="Exit", command=exit)
     menubar.post(event.x_root, event.y_root)
@@ -250,6 +286,8 @@ frameCntSleepToIdle = 19
 frameCntWalk = 12
 frameCntIdleToWalk = 5
 frameCntWalkToIdle = 5
+frameCntJumpHigh = 8
+frameCntJumpLow = 7
 
 frameIntervalIdle = 2000
 frameIntervalWagTail = 100
@@ -259,8 +297,11 @@ frameIntervalSleepToIdle = 150
 frameIntervalWalk = 100
 frameIntervalIdleToWalk = 100
 frameIntervalWalkToIdle = 100
+frameIntervalJumpHigh = 100
+frameIntervalJumpLow = 150
 
 walkSpeed = 8
+JumpHeight = 80
 
 framesIdle = [tk.PhotoImage(file='Src/CatSpriteIdle.gif', format = 'gif -index %i' %(i)) for i in range(frameCntIdle)]
 framesWagTail = [tk.PhotoImage(file='Src/CatSpriteWagTail.gif', format = 'gif -index %i' %(i)) for i in range(frameCntWagTail)]
@@ -275,10 +316,12 @@ framesWalkR = [tk.PhotoImage(file='Src/CatSpriteWalkR.gif', format = 'gif -index
 framesIdleToWalkR = [tk.PhotoImage(file='Src/CatSpriteIdleToWalkR.gif', format = 'gif -index %i' %(i)) for i in range(frameCntIdleToWalk)]
 framesWalkToIdleR = [tk.PhotoImage(file='Src/CatSpriteWalkToIdleR.gif', format = 'gif -index %i' %(i)) for i in range(frameCntWalkToIdle)]
 
+framesJumpHigh = [tk.PhotoImage(file='Src/CatSpriteJumpHigh.gif', format = 'gif -index %i' %(i)) for i in range(frameCntJumpHigh)]
+framesJumpLow = [tk.PhotoImage(file='Src/CatSpriteJumpLow.gif', format = 'gif -index %i' %(i)) for i in range(frameCntJumpLow)]
+
 ####################################
 
 catControl = CatControl()
-
 
 root.after(0, Update, catControl)
 # root.after(0, UpdateTest, catControl)
