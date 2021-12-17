@@ -1,0 +1,1 @@
+C:\Users\Lodada\AppData\Roaming\Python\Python310\Scripts\pyinstaller -F -w -i Src\icon.ico main.py --paths="C:/Users/Lodada/AppData/Roaming/Python/Python310/site-packages/cv2"

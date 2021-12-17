@@ -6,6 +6,10 @@ import cv2
 
 Walk_Rightward = 1
 Walk_Leftward = -1
+WIDTH_RIGHT_BOUND = 100
+WIDTH_RIGHT_BOUND = 1500
+HEIGHT_BOTTOM_BOUND = 800
+HEIGHT_TOP_BOUND = 120
 
 
 class WindowDraggable():
@@ -78,7 +82,7 @@ def Update(catControl):
         if catControl.walkFlag == 1:
             catControl.walkFlag = 2
         else:
-            if (root.winfo_x() < 100 or root.winfo_x() > 1500) or random.randrange(4) == 0:
+            if (root.winfo_x() < WIDTH_RIGHT_BOUND or root.winfo_x() > WIDTH_RIGHT_BOUND) or random.randrange(4) == 0:
                 catControl.walkFlag = 0
                 showWalkToIdle(0, catControl.walkDir)
                 root.after(frameCntWalkToIdle * frameIntervalWalkToIdle, Update, catControl)
@@ -99,9 +103,9 @@ def Update(catControl):
         showWagTail(0)
         root.after(frameCntWagTail * frameIntervalWagTail, Update, catControl)
     elif seed == 2:
-        if root.winfo_x() < 100:
+        if root.winfo_x() < WIDTH_RIGHT_BOUND:
             catControl.walkDir == Walk_Rightward
-        elif root.winfo_x() > 1500:
+        elif root.winfo_x() > WIDTH_RIGHT_BOUND:
             catControl.walkDir == Walk_Leftward
         else:
             catControl.walkDir = random.choice([Walk_Leftward, Walk_Rightward])
@@ -109,10 +113,10 @@ def Update(catControl):
         catControl.walkFlag = 1
         root.after(frameCntIdleToWalk * frameIntervalIdleToWalk, Update, catControl)
     elif seed == 3:
-        if random.randrange(2) == 0 and root.winfo_y() > 120:
+        if random.randrange(2) == 0 and root.winfo_y() > HEIGHT_TOP_BOUND:
             showJumpHigh(0)
             root.after(frameCntJumpHigh * frameIntervalJumpHigh, Update, catControl)
-        elif random.randrange(2) == 1 and root.winfo_y() < 800:
+        elif random.randrange(2) == 1 and root.winfo_y() < HEIGHT_BOTTOM_BOUND:
             showJumpLow(0)
             screen_pos_x = root.winfo_x()
             screen_pos_y = root.winfo_y() + 20 * 4
