@@ -2,11 +2,10 @@ import time
 import tkinter as tk
 import random
 import os
-import cv2
 
 Walk_Rightward = 1
 Walk_Leftward = -1
-WIDTH_RIGHT_BOUND = 100
+WIDTH_LEFT_BOUND = 100
 WIDTH_RIGHT_BOUND = 1500
 HEIGHT_BOTTOM_BOUND = 800
 HEIGHT_TOP_BOUND = 120
@@ -82,7 +81,7 @@ def Update(catControl):
         if catControl.walkFlag == 1:
             catControl.walkFlag = 2
         else:
-            if (root.winfo_x() < WIDTH_RIGHT_BOUND or root.winfo_x() > WIDTH_RIGHT_BOUND) or random.randrange(4) == 0:
+            if (root.winfo_x() < WIDTH_RIGHT_BOUND or root.winfo_x() > WIDTH_LEFT_BOUND) or random.randrange(4) == 0:
                 catControl.walkFlag = 0
                 showWalkToIdle(0, catControl.walkDir)
                 root.after(frameCntWalkToIdle * frameIntervalWalkToIdle, Update, catControl)
@@ -105,7 +104,7 @@ def Update(catControl):
     elif seed == 2:
         if root.winfo_x() < WIDTH_RIGHT_BOUND:
             catControl.walkDir == Walk_Rightward
-        elif root.winfo_x() > WIDTH_RIGHT_BOUND:
+        elif root.winfo_x() > WIDTH_LEFT_BOUND:
             catControl.walkDir == Walk_Leftward
         else:
             catControl.walkDir = random.choice([Walk_Leftward, Walk_Rightward])
@@ -241,7 +240,6 @@ def showJumpLow(idx):
     root.after(frameIntervalJumpLow, showJumpLow, idx)
 
 def rightKey(event):
-    menubar.add_command(label="Exit", command=exit)
     menubar.post(event.x_root, event.y_root)
 
 
@@ -273,8 +271,9 @@ root.bind('<Escape>', lambda e: root.destroy())
 # L = tk.Label(root, text="Right-click to display menu", width=40, height=20)
 # L.pack()
 menubar = tk.Menu(root,tearoff=False) # 创建一个菜单
-root.bind("<Button-3>", lambda x: rightKey(x)) # 绑定右键鼠标事件
+menubar.add_command(label="Exit", command=root.destroy)
 label = tk.Label(root, borderwidth=0)
+label.bind("<Button-3>", lambda x: rightKey(x)) # 绑定右键鼠标事件
 label.pack()
 
 WindowDraggable(label)

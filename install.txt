@@ -1,1 +1,3 @@
-C:\Users\Lodada\AppData\Roaming\Python\Python310\Scripts\pyinstaller -F -w -i Src\icon.ico main.py --paths="C:/Users/Lodada/AppData/Roaming/Python/Python310/site-packages/cv2"
+C:\users\lodada\appdata\roaming\python\python37\Scripts\pyinstaller -F -w -i Src\icon.ico main.py --paths="C:/Users/Lodada/AppData/Roaming/Python/Python310/site-packages/cv2"
+
+C:\users\lodada\appdata\roaming\python\python37\Scripts\pyinstaller -F -w -i Src\mint\icon.ico mint.py
